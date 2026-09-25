@@ -118,3 +118,7 @@ The backend suite exercises authorization, CSRF, password attempts, signed webho
 ## Publishing a public copy
 
 See [RELEASING.md](RELEASING.md) before changing repository visibility. Deleting private references from the latest files does not remove them from old commits.
+
+## License
+
+[MIT](LICENSE).

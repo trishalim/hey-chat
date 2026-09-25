@@ -26,5 +26,6 @@
   "devDependencies": {
     "@playwright/test": "^1.55.0",
     "supertest": "^7.1.0"
-  }
+  },
+  "license": "MIT"
 }
