@@ -1,0 +1,30 @@
+{
+  "name": "little-chat",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.16"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.js",
+    "start": "node --env-file=.env src/server.js",
+    "dev": "node --watch --env-file=.env src/server.js",
+    "test": "node --test test/*.test.js",
+    "check": "node --check src/app.js && node --check src/db.js && node --check src/engine.js && node --check src/runtime.js && node --check src/queue.js && node --check src/privacy.js && node --check api/index.js && node --check api/worker.js && node --check api/maintenance.js && node --check src/instagram.js && node --check src/views.js && node --check public/admin.js",
+    "reset-password": "node --env-file=.env scripts/reset-password.js",
+    "test:browser": "node test/browser-smoke.js"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.18.0",
+    "@vercel/queue": "^0.6.0",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.0",
+    "express-session": "^1.18.2",
+    "helmet": "^8.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "supertest": "^7.1.0"
+  }
+}

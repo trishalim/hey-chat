@@ -1,0 +1,20 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { randomBytes, randomUUID } from 'node:crypto';
+import { loadConfig } from '../src/config.js';
+import { openDatabase, setSetting } from '../src/db.js';
+import { hashPassword } from '../src/security.js';
+const config = loadConfig();
+const db = await openDatabase(config.databasePath);
+const password = randomBytes(18).toString('base64url');
+const hash = await hashPassword(password);
+await db.transaction(async () => {
+  await setSetting(db, 'password_hash', hash);
+  await setSetting(db, 'auth_version', randomUUID());
+  await db.prepare('DELETE FROM sessions').run();
+})();
+db.close();
+const output = config.production ? path.join(path.dirname(config.databasePath), 'LOCAL_ACCESS.md') : 'LOCAL_ACCESS.md';
+fs.writeFileSync(output, `# Your private Little Chat login\n\nOpen ${config.appUrl}/admin\n\nPassword: \`${password}\`\n\nNo username is needed. All previous login sessions have been signed out. This file is not served by the website and is excluded from Git.\n`, { mode: 0o600 });
+fs.chmodSync(output, 0o600);
+console.log(`Admin password reset. New password saved in ${output}.`);

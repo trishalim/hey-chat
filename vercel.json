@@ -1,0 +1,20 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "npm run check",
+  "functions": {
+    "api/index.js": { "maxDuration": 60, "includeFiles": "public/**" },
+    "api/worker.js": { "maxDuration": 180, "experimentalTriggers": [{ "type": "queue/v2beta", "topic": "little-chat-deliveries" }] },
+    "api/maintenance.js": { "maxDuration": 180 }
+  },
+  "rewrites": [
+    { "source": "/admin/:path*", "destination": "/api/index" },
+    { "source": "/webhooks/instagram", "destination": "/api/index" },
+    { "source": "/assets/:path*", "destination": "/api/index" },
+    { "source": "/health", "destination": "/api/index" },
+    { "source": "/robots.txt", "destination": "/api/index" },
+    { "source": "/privacy", "destination": "/api/index" },
+    { "source": "/data-deletion", "destination": "/api/index" }
+  ],
+  "crons": [{ "path": "/api/maintenance", "schedule": "0 6 * * *" }]
+}

@@ -1,0 +1,9 @@
+node_modules
+.env
+.env.*
+LOCAL_ACCESS.md
+data
+.git
+test
+test-results
+playwright-report
