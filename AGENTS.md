@@ -18,6 +18,19 @@ Inspect the working directory and available tools first. Reuse information the p
 
 Do the technical work with available terminal/browser tools. If you only have chat access, say so and give one concrete step at a time. Explain blockers precisely and keep progressing on independent setup work. Do not promise fully automatic Meta approval.
 
+## Required repository setup before deployment
+
+The operator's deployment repository must be **private**. This upstream project is public. GitHub forks of public repositories are public and cannot independently change visibility: https://docs.github.com/en/pull-requests/reference/forks . Do not promise a private GitHub fork or create a public fork for personal deployment. Use an independent private copy, keeping this project as an `upstream` remote for updates. Explain the distinction briefly.
+
+1. Check the signed-in GitHub account and ask for the destination owner/name if not already provided. Inspect existing local repositories/remotes first; do not repurpose an unrelated checkout or push to the maintainer's repository.
+2. For a fresh installation, clone `https://github.com/trishalim/hey-chat.git` into a new directory. Rename its `origin` remote to `upstream`. Create a new, empty **private** repository in the operator's account (for example using `gh repo create OWNER/NAME --private`, substituting the chosen owner/name). Do not generate credentials or add personal configuration until the destination has been confirmed private.
+3. Verify the destination with `gh repo view OWNER/NAME --json nameWithOwner,isPrivate`. Require `isPrivate: true`. If creation/verification fails, stop the push/deployment step and resolve it. If an existing destination is public, explain the conflict and get authorization before changing its visibility; never silently use it.
+4. Add the verified destination as `origin` using its actual clone URL. Review tracked files and commit attribution; keep `.env`, generated password files, database files, access tokens, and deployment account metadata out of Git, even in a private repository. Push the application branch to that private origin. Retain the MIT license and attribution.
+5. Connect the hosting project to this private origin, not the public upstream. Verify the connected repository and privacy before deployment. Configure secrets in the hosting environment and isolate preview environments from production data.
+6. For later updates, fetch `upstream` and review/merge changes locally before pushing to private `origin`. Do not push personal changes or open pull requests to upstream unless the operator explicitly requests a contribution.
+
+Repository privacy and website authentication are separate. Anyone with a deployed URL may reach the login form. Confirm unauthenticated admin requests redirect to login, HTTPS is used in production, and secrets/password files are not served. The generated password must be unique to this installation. Explain that the app does not currently have two-factor authentication. Do not claim an unlinked URL is an access control. Do not put a blanket hosting login wall over the Instagram webhook; Meta must be able to reach the signed webhook endpoint.
+
 ## Workflow
 
 1. Read .env.example, package.json, the technical reference below, and the chosen deployment configuration. Check Node.js is at least 22.16.
@@ -95,7 +108,7 @@ Timeouts, server errors and interrupted sends have an unknown outcome. They appe
 
 ## Vercel deployment
 
-Create your own Vercel project from your fork. Do not connect a new installation to another operator’s database or reuse their secrets.
+Complete the required private repository setup above, then create a Vercel project connected to that private repository. Do not connect a new installation to another operator’s database or reuse their secrets.
 
 Production uses **Turso hosted SQLite** through `@libsql/client`, and **Vercel Queues** to wake the delivery worker. Local development uses the same async database interface with a local SQLite file. The old always-running worker is used only by `npm start`, never by Vercel.
 
@@ -112,7 +125,7 @@ Production creation and live delivery require service provisioning and verificat
 
 ### Persistent server with Docker (simplest hosting model)
 
-1. On a server with Node.js 22.16+, Docker Engine and Docker Compose, clone your repository and run `npm ci` then `npm run setup`.
+1. On a server with Node.js 22.16+, Docker Engine and Docker Compose, clone your verified private deployment repository and run `npm ci` then `npm run setup`.
 2. Point a domain’s DNS at that server. Allow inbound ports 80 and 443.
 3. In `.env`, set `APP_URL=https://chat.example.com` using your domain. Set `PRIVACY_CONTACT` and `PRIVACY_PROVIDERS` to accurate public information. Leave `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` unset to use local SQLite.
 4. Run `docker compose up -d --build`. Caddy obtains HTTPS certificates; the app runs its own background delivery worker.
